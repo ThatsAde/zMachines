@@ -1,0 +1,152 @@
+Items:
+  x:
+    MenuAction: "NONE"
+    Settings:
+      Material: "GRAY_STAINED_GLASS_PANE"
+      Display: "<gray>"
+  c:
+    MenuAction: "NONE"
+    Settings:
+      Material: "COAL"
+      Display: "<red>Fuel slot"
+      Lore:
+      - "<gray>Insert here fuel to power up <machine>"
+  f:
+    MenuAction: "FUEL_SLOT"
+    Settings:
+      Material: "AIR"
+  i:
+    MenuAction: "INPUT_SLOT"
+    Settings:
+      Material: "AIR"
+  o:
+    MenuAction: "OUTPUT_SLOT"
+    Settings:
+      Material: "AIR"
+  s:
+    MenuAction: "STATUS"
+    Settings:
+      Material: "LIME_STAINED_GLASS_PANE"
+  p:
+    MenuAction: "PROGRESS"
+    Settings:
+      Material: "GRAY_WOOL"
+  # Crafting Machine — decorative hint items (placed in filler slots adjacent to functional slots)
+  oh:
+    MenuAction: "NONE"
+    Settings:
+      Material: "LIME_STAINED_GLASS_PANE"
+      Display: "<green>Output slot"
+      Lore:
+      - "<gray>The crafted item will appear"
+      - "<gray>in the slot to the right"
+  ph:
+    MenuAction: "NONE"
+    Settings:
+      Material: "CYAN_STAINED_GLASS_PANE"
+      Display: "<aqua>Progress meter"
+      Lore:
+      - "<gray>Shows how far along the"
+      - "<gray>current crafting operation is"
+  fh:
+    MenuAction: "NONE"
+    Settings:
+      Material: "ORANGE_STAINED_GLASS_PANE"
+      Display: "<gold>Fuel slot"
+      Lore:
+      - "<gray>Place coal or other fuel"
+      - "<gray>in the slot to the left"
+  # Crafting Machine slot items
+  R:
+    MenuAction: "RECIPE_LIST"
+    Settings:
+      Material: "AIR"
+  P:
+    MenuAction: "PAGE_BACK"
+    Settings:
+      Material: "PAPER"
+      Display: "<gray>← Previous page"
+  N:
+    MenuAction: "PAGE_FORWARD"
+    Settings:
+      Material: "PAPER"
+      Display: "<gray>Next page →"
+  E:
+    MenuAction: "CONFIRM_CRAFT"
+    Settings:
+      Material: "EMERALD"
+      Display: "<green>Confirm crafting"
+      Lore:
+      - "<gray>Click to start crafting"
+      - "<gray>with the placed materials"
+Menus:
+  RubbleProcessor:
+    Title: "<gold>Rubble Processor"
+    Size: '36'
+    ItemGrid:
+      '1':
+        - "i,x,x,x,s,x,o,o,x"
+        - "i,x,x,x,f,x,o,o,x"
+        - "i,x,x,x,c,x,o,o,x"
+        - "i,x,x,x,x,x,o,o,x"
+      '2':
+        - "i,x,x,x,s,x,o,o,x"
+        - "i,x,x,x,f,x,o,o,x"
+        - "i,x,x,x,c,x,o,o,x"
+        - "i,x,x,x,x,x,o,o,x"
+      '3':
+        - "i,x,x,x,s,x,o,o,x"
+        - "i,x,x,x,f,x,o,o,x"
+        - "i,x,x,x,c,x,o,o,x"
+        - "i,x,x,x,x,x,o,o,x"
+  GrowingMachine:
+    Title: "<gold>Growing Machine"
+    Size: '36'
+    ItemGrid:
+      '1':
+        - "x,x,x,x,x,x,s,x,x"
+        - "f,x,i,i,i,x,o,o,x"
+        - "x,x,p,p,p,x,o,o,x"
+        - "c,x,x,x,x,x,o,o,x"
+      '2':
+        - "x,x,x,x,x,x,s,x,x"
+        - "f,x,i,i,i,i,o,o,x"
+        - "x,x,p,p,p,p,o,o,x"
+        - "c,x,x,x,x,x,o,o,x"
+      '3':
+        - "x,x,x,x,x,x,s,x,x"
+        - "f,x,i,i,i,i,i,o,o"
+        - "x,x,p,p,p,p,p,o,o"
+        - "c,x,x,x,x,x,x,o,o"
+  CraftingMachine:
+    Title: "<gold>Crafting Machine"
+    Size: '45'
+    # Layout is identical across tiers — tier only affects crafting speed (1.2x per tier).
+    # 5 rows × 9 cols = 45 slots. Tester-specified slot positions (0-indexed):
+    #   recipes 0–3, 9–12, 18–21, 27–30 (top-left 4×4)
+    #   inputs 14, 15, 23, 24, 32, 33   output 17   progress 26
+    #   fuel 36   page-back 38   page-forward 40   confirm 43
+    # R = recipe-list slot (16 per page, paginated)
+    # i = input slot (6 total)            o = output slot
+    # p = progress wool                   f = fuel slot
+    # P = previous page (paper)           N = next page (paper)
+    # E = confirm crafting (emerald)      x = filler
+    ItemGrid:
+      '1':
+        - "R,R,R,R,x,x,x,x,x"
+        - "R,R,R,R,x,i,i,oh,o"
+        - "R,R,R,R,x,i,i,ph,p"
+        - "R,R,R,R,x,i,i,x,x"
+        - "f,fh,P,x,N,x,x,E,x"
+      '2':
+        - "R,R,R,R,x,x,x,x,x"
+        - "R,R,R,R,x,i,i,oh,o"
+        - "R,R,R,R,x,i,i,ph,p"
+        - "R,R,R,R,x,i,i,x,x"
+        - "f,fh,P,x,N,x,x,E,x"
+      '3':
+        - "R,R,R,R,x,x,x,x,x"
+        - "R,R,R,R,x,i,i,oh,o"
+        - "R,R,R,R,x,i,i,ph,p"
+        - "R,R,R,R,x,i,i,x,x"
+        - "f,fh,P,x,N,x,x,E,x"

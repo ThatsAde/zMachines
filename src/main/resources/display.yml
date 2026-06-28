@@ -1,0 +1,35 @@
+Status:
+  RUNNING:
+    Material: "LIME_STAINED_GLASS_PANE"
+    Display: "<green>Running..."
+  WAITING_INPUT:
+    Material: "YELLOW_STAINED_GLASS_PANE"
+    Display: "<yellow>Waiting for input materials"
+  WAITING_FUEL:
+    Material: "ORANGE_STAINED_GLASS_PANE"
+    Display: "<yellow>Waiting for fuel material"
+  FULL:
+    Material: "RED_STAINED_GLASS_PANE"
+    Display: "<red>Output slots are full!"
+  INVALID_INPUT:
+    Material: "RED_STAINED_GLASS_PANE"
+    Display: "<red>No recipe found for these input items!"
+  INVALID_FUEL:
+    Material: "RED_STAINED_GLASS_PANE"
+    Display: "<red>No valid fuel found for these fuel items!"
+Progress:
+  STOPPED:
+    Material: "GRAY_WOOL"
+    Display: "<gray>Progress: 0%"
+  FIRST_QUARTILE:
+    Material: "RED_WOOL"
+    Display: "<red>Progress: %progress%%"
+  SECOND_QUARTILE:
+    Material: "ORANGE_WOOL"
+    Display: "<gold>Progress: %progress%%"
+  THIRD_QUARTILE:
+    Material: "YELLOW_WOOL"
+    Display: "<yellow>Progress: %progress%%"
+  FOURTH_QUARTILE:
+    Material: "GREEN_WOOL"
+    Display: "<green>Progress: %progress%%"

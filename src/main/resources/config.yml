@@ -1,0 +1,100 @@
+# Allow hoppers placed above a machine (facing down) to insert fuel/inputs, and hoppers
+# placed below a machine to extract its output. Toggled live by /zmachines reload.
+Hoppers: true
+# Per-tier and per-facing block materials. Both vanilla materials and Nexo IDs (nexo:<id>) are supported.
+# Lookup chain: TierN.Facing → TierN.Material → flat Material (any missing level falls back).
+# Nexo furniture with directional textures: use TierN.North/South/East/West for each facing variant.
+# Give command: /zmachines give <player> <type> <tier> [amount] [North|South|East|West]
+#   Omitting facing gives the TierN.Material (north / default) variant.
+# Example (per-tier per-facing Nexo furniture):
+#   GrowingMachine:
+#     ItemStack:
+#       Tier1:
+#         Material: "nexo:growing_machine_t1_north"   # default / North
+#         South: "nexo:growing_machine_t1_south"
+#         East:  "nexo:growing_machine_t1_east"
+#         West:  "nexo:growing_machine_t1_west"
+#       Tier2:
+#         Material: "nexo:growing_machine_t2_north"
+#         South: "nexo:growing_machine_t2_south"
+#         East:  "nexo:growing_machine_t2_east"
+#         West:  "nexo:growing_machine_t2_west"
+#       Tier3:
+#         Material: "nexo:growing_machine_t3_north"
+#         South: "nexo:growing_machine_t3_south"
+#         East:  "nexo:growing_machine_t3_east"
+#         West:  "nexo:growing_machine_t3_west"
+RubbleProcessor:
+  Name: "<gold>Rubble Processor"
+  ItemStack:
+    ItemVersion: '2.0'
+    Display: "<machine>"
+    Lore:
+    - ""
+    - "<gray>This machine processes various materials"
+    - "<gray>into <yellow>different</yellow> ones"
+    - ""
+    - "<red>Uses fuel"
+    Material: "FURNACE"
+GrowingMachine:
+  Name: "<gold>Growing Machine"
+  ItemStack:
+    ItemVersion: '2.0'
+    Display: "<machine>"
+    Lore:
+    - ""
+    - "<gray>This machine grows various seeds"
+    - "<gray>into their <yellow>harvestable</yellow> state"
+    - ""
+    - "<red>Uses fuel"
+    Material: "COMPOSTER"
+CraftingMachine:
+  Name: "<gold>Crafting Machine"
+  ItemStack:
+    ItemVersion: '2.0'
+    Display: "<machine>"
+    Lore:
+    - ""
+    - "<gray>Crafts custom items from a list"
+    - "<gray>of configured recipes"
+    - ""
+    - "<red>Uses fuel"
+    Material: "MAGENTA_CONCRETE"
+Recipes:
+  RubbleProcessor:
+    # Accepts any block tagged BASE_STONE_OVERWORLD in all 4 input slots.
+    # Consumes 1 from each slot per cycle and produces 1 Output.
+    # Tier 2 runs 1.2x faster than tier 1; tier 3 runs 1.2x faster than tier 2.
+    BaseRate: 4.0
+    Output: "DIRT:1"
+  GrowingMachine:
+    # Named recipes — one per seed type. Seeds are NOT consumed (matches vanilla farming).
+    pumpkin:
+      BaseRate: 30.0
+      Input: "PUMPKIN_SEEDS"
+      Output: "PUMPKIN:1"
+    melon:
+      BaseRate: 35.0
+      Input: "MELON_SEEDS"
+      Output: "MELON:1"
+  CraftingMachine:
+    # Recipes for the Crafting Machine.
+    # Order  — controls position in the recipe list (1 = first slot, 2 = next, etc.)
+    # Inputs — sum across the 6 input slots; player can split items across slots in any order
+    # Output — supports vanilla ("DIRT:1") or Nexo ("nexo:rifle:1") format
+    iron_sword:
+      Order: 1
+      BaseRate: 30.0
+      Inputs:
+      - "IRON_INGOT:2"
+      - "STICK:1"
+      Output: "IRON_SWORD:1"
+    iron_pickaxe:
+      Order: 2
+      BaseRate: 45.0
+      Inputs:
+      - "IRON_INGOT:3"
+      - "STICK:2"
+      Output: "IRON_PICKAXE:1"
+Fuel:
+- "COAL:1.0"

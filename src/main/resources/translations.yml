@@ -1,0 +1,53 @@
+Prefix: "<gradient:#ae78ff:#ff5964>zMachines</gradient> <gray>»"
+
+Translations:
+  Menu:
+    MissingMenu:
+      - ""
+      - "<prefix> <red>Menu with <yellow><key></yellow> was not found! Contact Admins!"
+      - ""
+  Help:
+    - "<prefix> <red>Help"
+    - "<gray>» /zmachines reload <white>- Reloads plugin configuration"
+    - "<gray>» /zmachines give <player> <machine_type> [amount]"
+  Reloaded:
+    - "<prefix> <red>Plugin has been successfully reloaded!"
+  Commons:
+    PlayerOffline: "<prefix> <red>Player <yellow><player></yellow> is offline!"
+  Placed:
+    - ""
+    - "<gradient:#ae78ff:#ff5964>zMachines</gradient> <gray>» <green>Successfully placed <machine>"
+    - ""
+  ErrorPlacing:
+    - ""
+    - "<gradient:#ae78ff:#ff5964>zMachines</gradient> <gray>» <red>There was an error placing machine!"
+    - ""
+  Break:
+    - ""
+    - "<gradient:#ae78ff:#ff5964>zMachines</gradient> <gray>» <red>Successfully destroyed <machine>"
+    - ""
+  ErrorBreaking:
+    - ""
+    - "<gradient:#ae78ff:#ff5964>zMachines</gradient> <gray>» <red>There was an error destroying machine!"
+    - ""
+  ErrorUpdating:
+    - ""
+    - "<gradient:#ae78ff:#ff5964>zMachines</gradient> <gray>» <red>There was an error while updating machine data!"
+    - ""
+  ItemsDroppedOnGround:
+    - ""
+    - "<gradient:#ae78ff:#ff5964>zMachines</gradient> <gray>» <red>Inventory full - items have been dropped on ground!"
+    - ""
+  MachineUpdatedItemDrop:
+    - ""
+    - "<gradient:#ae78ff:#ff5964>zMachines</gradient> <gray>» <red>Machine's inventory has been changed! Items dropped on ground!"
+    - ""
+  CooldownOpenGUI:
+    - ""
+    - "<gradient:#ae78ff:#ff5964>zMachines</gradient> <gray>» <red>Wait a bit before opening the machine again!"
+    - ""
+  Give:
+    Help: "<prefix> /zmachines give <player> <machine_type> [amount]"
+    InvalidMachineType: "<prefix> <red>Invalid machine type! Valid types are: <yellow><machines>"
+    InvalidNumber: "<prefix> <yellow><number></yellow><red> is invalid number!"
+    Success: "<prefix> <green>Successfully gave <yellow><player></yellow> <aqua><amount>x</aqua> <red><machine>"
