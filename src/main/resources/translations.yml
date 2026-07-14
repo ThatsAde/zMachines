@@ -50,4 +50,5 @@ Translations:
     Help: "<prefix> /zmachines give <player> <machine_type> [amount]"
     InvalidMachineType: "<prefix> <red>Invalid machine type! Valid types are: <yellow><machines>"
     InvalidNumber: "<prefix> <yellow><number></yellow><red> is invalid number!"
+    NoBlockConfigured: "<prefix> <red>No block configured for <yellow><machine></yellow> <red>tier <yellow><tier></yellow><red> — set a vanilla material or nexo:<id> for that tier in config.yml."
     Success: "<prefix> <green>Successfully gave <yellow><player></yellow> <aqua><amount>x</aqua> <red><machine>"

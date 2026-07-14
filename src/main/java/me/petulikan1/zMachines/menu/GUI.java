@@ -8,6 +8,7 @@ import me.petulikan1.zMachines.dataholders.Machine;
 import me.petulikan1.zMachines.messages.Formatter;
 import me.petulikan1.zMachines.messages.Mini;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
@@ -215,7 +216,7 @@ public class GUI implements HolderGUI {
         }
         try {
 
-            GUI g = new GUI(config.getTitle(), config.getSize(), config.getInventoryType()) {
+            GUI g = new GUI(config.getTitle(Placeholder.component("tier", Component.text(machine.getTier()))), config.getSize(), config.getInventoryType()) {
                 @Override
                 public void onClose(Player player) {
                     machine.onClose(player, this, config.getItemGrid());

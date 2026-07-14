@@ -32,6 +32,9 @@ import java.util.Map;
 public class ItemGrid {
     private final String key;
 
+    // Number of configured rows for this menu/tier. Drives the inventory size (rows * 9).
+    private int rows;
+
     public HashMap<Integer, String> items = new HashMap<>();
 
     public HashMap<MachineState, MenuItem> statusItems = new HashMap<>();
@@ -60,7 +63,14 @@ public class ItemGrid {
         int counter = 0;
         int lengthToCheck = type == InventoryType.CHEST ? 9 : type.getDefaultSize();
 
-        for (String a : config.getStringList(key)) {
+        List<String> gridRows = config.getStringList(key);
+        this.rows = gridRows.size();
+        if (type == InventoryType.CHEST && rows > 6) {
+            Loader.main.error("Menu " + key + " has " + rows + " lines, but chest menus support at most 6 (54 slots). Extra lines will be ignored.");
+            this.rows = 6;
+        }
+
+        for (String a : gridRows) {
             String[] split = a.split(",");
             if (split.length != lengthToCheck) {
                 Loader.main.error("Invalid item grid! Key: " + key + " | Data: " + a + " | Error: Invalid length - required " + lengthToCheck + ", found: " + split.length);

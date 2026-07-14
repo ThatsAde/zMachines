@@ -28,10 +28,8 @@ import org.bukkit.event.HandlerList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -323,48 +321,44 @@ public class API {
 
 
     /**
-     * Returns the raw material string for the given machine type + tier.
-     * Checks {@code <id>.ItemStack.TierN.Material} first; falls back to the flat
-     * {@code <id>.ItemStack.Material} key so existing configs continue to work.
-     * This is the "give default" — typically the North / primary variant.
+     * Returns the raw material string for the given machine type + tier, or "" if the tier
+     * has no block configured. There is intentionally NO vanilla fallback: an unconfigured /
+     * misspelled tier is simply not a machine block (it won't be registered or recognised).
+     *
+     * Accepts all three ways a tier can be written in config.yml — the bundled YAML parser
+     * stores an inline {@code { ... }} map as the value of the {@code TierN} key (NOT as a
+     * dotted {@code TierN.Material} sub-key), so we read each form explicitly:
+     * <ul>
+     *   <li>expanded:  {@code Tier1:\n    Material: "nexo:x"}  → dotted key {@code TierN.Material}</li>
+     *   <li>inline map: {@code Tier1: { Material: "nexo:x" }}  → a Map value under {@code TierN}</li>
+     *   <li>scalar:     {@code Tier1: "nexo:x"}                → a plain string under {@code TierN}</li>
+     * </ul>
      */
     public static String getMaterialRaw(String identifier, int tier) {
-        String raw = Loader.cfg.getString(identifier + ".ItemStack.Tier" + tier + ".Material", "");
+        String base = identifier + ".ItemStack.Tier" + tier;
+        // expanded form: real dotted sub-key
+        String raw = Loader.cfg.getString(base + ".Material", "");
         if (!raw.isEmpty()) return raw;
-        return Loader.cfg.getString(identifier + ".ItemStack.Material", "");
+        // inline-map form: the parser stores { Material: "..." } as a Map value under TierN
+        Object v = Loader.cfg.get(base);
+        if (v instanceof Map<?, ?> map) {
+            Object mat = map.get("Material");
+            if (mat != null && !mat.toString().isEmpty()) return mat.toString();
+        }
+        // scalar form: TierN: "..."  (writtenValue of an inline map starts with '{', so skip that)
+        String scalar = Loader.cfg.getString(base, "").trim();
+        if (!scalar.isEmpty() && !scalar.startsWith("{")) return scalar;
+        return "";
     }
-
-    /**
-     * Returns the raw material string for the given machine type + tier + cardinal facing.
-     * Checks {@code <id>.ItemStack.TierN.<Facing>} first (e.g. {@code Tier1.South}), then
-     * falls back to {@link #getMaterialRaw(String, int)} (the tier default / North variant).
-     *
-     * @param facing capitalised direction: {@code "North"}, {@code "South"}, {@code "East"}, {@code "West"}
-     */
-    public static String getMaterialRaw(String identifier, int tier, String facing) {
-        String raw = Loader.cfg.getString(identifier + ".ItemStack.Tier" + tier + "." + facing, "");
-        if (!raw.isEmpty()) return raw;
-        return getMaterialRaw(identifier, tier);
-    }
-
-    // Cardinal facings iterated when registering materials — covers per-facing Nexo furniture variants.
-    private static final List<String> FACINGS = List.of("North", "South", "East", "West");
 
     private static void loadMaterials() {
-        // Register the block material for every machine type + every tier + every facing so
-        // block-click detection covers all per-tier, per-facing Nexo furniture variants.
-        // Duplicate raw strings (facing not configured → resolves to same ID as default) are skipped.
+        // Register the block material for every machine type + every tier so block-click detection
+        // covers all per-tier variants (vanilla materials and Nexo block IDs).
         List<Material> materials = new ArrayList<>();
         for (MachineType mt : MachineType.values()) {
             String key = mt.getIdentifier();
-            Set<String> seen = new HashSet<>();
             for (int tier = Tier.MIN; tier <= Tier.MAX; tier++) {
-                for (String facing : FACINGS) {
-                    String raw = getMaterialRaw(key, tier, facing);
-                    if (seen.add(raw)) {
-                        registerMaterial(key + " tier " + tier + " " + facing, raw, materials);
-                    }
-                }
+                registerMaterial(key + " tier " + tier, getMaterialRaw(key, tier), materials);
             }
         }
         Loader.machineMaterials.clear();
@@ -376,16 +370,16 @@ public class API {
         buildNexoIdMap();
     }
 
+    // Maps each configured Nexo block ID → its machine type + tier, so a placed Nexo block can be
+    // recognised as a machine by ID (no PDC tag needed). Rebuilt on every load/reload.
     private static void buildNexoIdMap() {
         Map<String, Pair<MachineType, Integer>> map = new HashMap<>();
         for (MachineType mt : MachineType.values()) {
             String key = mt.getIdentifier();
             for (int tier = Tier.MIN; tier <= Tier.MAX; tier++) {
-                for (String facing : FACINGS) {
-                    String raw = getMaterialRaw(key, tier, facing);
-                    if (raw.toLowerCase().startsWith("nexo:")) {
-                        map.putIfAbsent(raw.substring(5), new Pair<>(mt, tier));
-                    }
+                String raw = getMaterialRaw(key, tier);
+                if (raw.toLowerCase().startsWith("nexo:")) {
+                    map.putIfAbsent(raw.substring(5), new Pair<>(mt, tier));
                 }
             }
         }

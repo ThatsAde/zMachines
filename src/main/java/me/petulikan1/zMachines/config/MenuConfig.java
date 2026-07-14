@@ -6,6 +6,7 @@ import me.petulikan1.zMachines.Loader;
 import me.petulikan1.zMachines.menu.items.ItemGrid;
 import me.petulikan1.zMachines.messages.MiniImpl;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.event.inventory.InventoryType;
 
 import java.util.HashMap;
@@ -37,8 +38,8 @@ public class MenuConfig {
         return "Menus." + key;
     }
 
-    public Component getTitle() {
-        return new MiniImpl(Loader.menuCfg, getMenuPath(), "Title");
+    public Component getTitle(TagResolver... resolvers) {
+        return new MiniImpl(Loader.menuCfg, getMenuPath(), "Title", resolvers);
     }
 
     private InventoryType type;
@@ -68,6 +69,11 @@ public class MenuConfig {
     }
 
     public int getSize() {
+        // Chest menus size themselves from the number of configured ItemGrid lines (rows * 9),
+        // so adding/removing a line in menus.yml grows/shrinks the menu automatically.
+        if (getInventoryType() == InventoryType.CHEST && itemGrid != null) {
+            return itemGrid.getRows() * 9;
+        }
         return Loader.menuCfg.getInt(getMenuPath() + ".Size");
     }
 
