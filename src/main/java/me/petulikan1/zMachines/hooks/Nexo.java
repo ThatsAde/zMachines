@@ -17,23 +17,16 @@ import me.petulikan1.zMachines.API;
 import me.petulikan1.zMachines.Loader;
 import me.petulikan1.zMachines.dataholders.Machine;
 import me.petulikan1.zMachines.dataholders.MachineType;
-import me.petulikan1.zMachines.dataholders.Tier;
 import me.petulikan1.zMachines.messages.Mini;
-import me.petulikan1.zMachines.utils.PDC;
 import me.petulikan1.zMachines.utils.Pair;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
-
-import java.util.Optional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -108,37 +101,6 @@ public class Nexo implements Listener {
         }
     }
 
-    /** Resolved machine metadata read from a placed item's PDC. */
-    private record Placement(Pair<MachineType, String> pair, int tier) {}
-
-    /**
-     * Reads the machine PDC tags from an item and resolves the machine type + tier.
-     * Returns {@code null} if the item is not a zMachines machine item. Shared by the
-     * block- and furniture-place handlers so the extraction stays identical.
-     */
-    private Placement readPlacement(ItemStack item) {
-        if (item == null || !item.hasItemMeta()) return null;
-        ItemMeta meta = item.getItemMeta();
-        PDC pdc = new PDC(meta);
-        if (!pdc.hasBoolean("machine_block")) return null;
-
-        String machineID = pdc.getString("machine_id");
-        if (machineID == null) return null;
-        MachineType mt = MachineType.getMachineType(machineID);
-        if (mt == null) return null;
-
-        int storedTier = Optional.ofNullable(meta.getPersistentDataContainer()
-                .get(new NamespacedKey(Loader.main, "machine_tier"), PersistentDataType.INTEGER))
-                .orElse(-1);
-        if (storedTier == -1) return null;
-        // Legacy tier migration: pre-2.0 items used 0-indexed tiers
-        Double version = meta.getPersistentDataContainer()
-                .get(new NamespacedKey(Loader.main, "item_version"), PersistentDataType.DOUBLE);
-        if (version != null && version < 2.0) storedTier += 1;
-
-        return new Placement(new Pair<>(mt, pdc.getString("nexoid")), Tier.clamp(storedTier));
-    }
-
     /**
      * Block-aligned location of a furniture base entity. Furniture interact/break events expose
      * only the base {@link ItemDisplay} (no {@code getBlock()}), so we derive the machine key the
@@ -155,14 +117,15 @@ public class Nexo implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void nexoPlaceBlock(NexoBlockPlaceEvent e) {
-        Placement p = readPlacement(e.getItemInHand());
-        if (p == null) return;
+        String nexoId = e.getMechanic().getItemID();
+        Pair<MachineType, Integer> entry = API.nexoMachineById.get(nexoId);
+        if (entry == null) return;
 
         final Location loc = e.getBlock().getLocation();
         final Player player = e.getPlayer();
         API.runTaskAsync(() -> {
             try {
-                API.createMachine(p.pair(), player, loc, p.tier());
+                API.createMachine(new Pair<>(entry.getKey(), nexoId), player, loc, entry.getValue());
             } catch (Exception ex) {
                 Loader.main.error("Failed to create Nexo machine at " + loc + ": " + ex.getMessage());
                 Mini.mm(player, "ErrorPlacing");
@@ -300,11 +263,38 @@ public class Nexo implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void handleMachineInteract(NexoBlockInteractEvent e) {
-        Machine machine = API.getMachineByLocation(e.getBlock().getLocation());
-        if (machine == null) return;
-        // Cancel the Nexo event to suppress default custom-block behaviour (note sounds, etc.).
+        final Location loc = e.getBlock().getLocation();
+        Machine machine = API.getMachineByLocation(loc);
+        if (machine == null) {
+            // No machine here yet — the block may have been placed by WorldEdit (a schematic paste
+            // fires no place event). If its Nexo ID is a configured machine, lazy-create it on the
+            // first right-click, then open the GUI. Only right-click triggers this (left-click is
+            // the player starting to break the block — leave that alone).
+            if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+            String nexoId = e.getMechanic().getItemID();
+            Pair<MachineType, Integer> entry = API.nexoMachineById.get(nexoId);
+            if (entry == null) return;
+            e.setCancelled(true);
+            final Player player = e.getPlayer();
+            if (!player.isConnected() || player.isSneaking()) return;
+            API.runTaskAsync(() -> {
+                try {
+                    Machine created = API.createMachine(new Pair<>(entry.getKey(), nexoId), player, loc, entry.getValue());
+                    if (created != null) {
+                        API.runTaskSync(() -> {
+                            if (player.isConnected() && !player.isSneaking()) created.openGUI(player);
+                        });
+                    }
+                } catch (Exception ex) {
+                    Loader.main.error("Failed to lazy-create machine at " + loc + ": " + ex.getMessage());
+                }
+            });
+            return;
+        }
+        // Registered machine: cancel the Nexo event to suppress default custom-block behaviour
+        // (note sounds, etc.) on any interaction.
         e.setCancelled(true);
-        // Also open the GUI directly here: Nexo may set useInteractedBlock=DENY on the underlying
+        // Open the GUI directly here: Nexo may set useInteractedBlock=DENY on the underlying
         // PlayerInteractEvent, which would cause MachineListener.onInteract to exit early.
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             final Player player = e.getPlayer();

@@ -2,7 +2,6 @@ package me.petulikan1.zMachines.dataholders;
 
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -11,19 +10,16 @@ import java.util.List;
 @Getter
 public enum MachineType {
 
-    RUBBLE_PROCESSOR("RubbleProcessor", Material.FURNACE),
-    GROWING_MACHINE("GrowingMachine", Material.COMPOSTER),
-    CRAFTING_MACHINE("CraftingMachine", Material.CRAFTING_TABLE);
+    RUBBLE_PROCESSOR("RubbleProcessor"),
+    GROWING_MACHINE("GrowingMachine"),
+    CRAFTING_MACHINE("CraftingMachine");
 
     // Config key used in config.yml / menus.yml (e.g. "RubbleProcessor"). Also doubles as the
     // Machine#identifier passed to the Machine constructor.
     private final String identifier;
-    // Fallback Bukkit material when the config value can't be resolved (e.g. invalid Nexo id).
-    private final Material defaultMaterial;
 
-    MachineType(String identifier, Material defaultMaterial) {
+    MachineType(String identifier) {
         this.identifier = identifier;
-        this.defaultMaterial = defaultMaterial;
     }
 
     @Nullable

@@ -53,8 +53,7 @@ public class zMachinesCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if (args[0].equalsIgnoreCase("give")) {
-            // /zmachines give <player> <type> <tier> [amount] [facing]
-            // facing = North|South|East|West (default: North / TierN.Material)
+            // /zmachines give <player> <type> <tier> [amount]
             if (args.length < 3) {
                 Mini.mm(s, "Give.Help");
                 return true;
@@ -103,17 +102,6 @@ public class zMachinesCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            // Optional facing argument: North|South|East|West (case-insensitive, default = "North")
-            String facing = "North";
-            if (args.length >= 6) {
-                String facingArg = args[5].substring(0, 1).toUpperCase() + args[5].substring(1).toLowerCase();
-                if (!GIVE_FACINGS.contains(facingArg)) {
-                    s.sendMessage("Invalid facing. Use: " + String.join(", ", GIVE_FACINGS));
-                    return true;
-                }
-                facing = facingArg;
-            }
-
             String key = mt.getIdentifier();
             BasicItem basicItem = new BasicItem(Loader.cfg, key + ".ItemStack");
             basicItem.setNbtConsumer(pdc -> {
@@ -123,7 +111,7 @@ public class zMachinesCommand implements CommandExecutor, TabCompleter {
                 pdc.setInt("machine_tier", tier);
             });
 
-            String mat = API.getMaterialRaw(key, tier, facing);
+            String mat = API.getMaterialRaw(key, tier);
             boolean isNexoItem = mat.toLowerCase().startsWith("nexo:");
             Material m = Material.getMaterial(mat.toUpperCase());
             Component machineName = MiniImpl.getTrC(Loader.cfg, key, "Name");
@@ -142,10 +130,13 @@ public class zMachinesCommand implements CommandExecutor, TabCompleter {
                 item.setAmount(amount);
             }
             if (item == null) {
-                // Only fall back to the enum-default material if the configured one didn't resolve.
-                // Previously this branch always overwrote `m`, which clobbered valid vanilla materials
-                // (e.g. MAGENTA_CONCRETE) and forced every give to use the default block.
-                if (m == null) m = mt.getDefaultMaterial();
+                if (m == null) {
+                    // No vanilla fallback by design: the block for this tier isn't configured or didn't
+                    // resolve (empty / typo'd material / Nexo id with Nexo support off). Fail loudly
+                    // instead of silently handing out a default block.
+                    Mini.mm(s, "Give.NoBlockConfigured", comp("machine", machineName), comp("tier", tier));
+                    return true;
+                }
                 item = basicItem.build(m, comp("machine", machineName));
                 item.setAmount(amount);
             }
@@ -193,7 +184,6 @@ public class zMachinesCommand implements CommandExecutor, TabCompleter {
     }
 
     private final List<String> machineTypes = Arrays.stream(MachineType.values()).map(Enum::name).toList();
-    private static final List<String> GIVE_FACINGS = List.of("North", "South", "East", "West");
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender s, @NotNull Command command, @NotNull String ds, @NotNull String[] args) {
@@ -211,11 +201,6 @@ public class zMachinesCommand implements CommandExecutor, TabCompleter {
         if (args.length == 3) {
             if (args[0].equalsIgnoreCase("give")) {
                 return StringUtils.copyPartialMatches(args[2], machineTypes);
-            }
-        }
-        if (args.length == 6) {
-            if (args[0].equalsIgnoreCase("give")) {
-                return StringUtils.copyPartialMatches(args[5], GIVE_FACINGS);
             }
         }
         return List.of();

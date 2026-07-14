@@ -81,8 +81,8 @@ Items:
       - "<gray>with the placed materials"
 Menus:
   RubbleProcessor:
-    Title: "<gold>Rubble Processor"
-    Size: '36'
+    Title: "<gold>Rubble Processor <dark_gray>— T<tier>"
+    # Menu size is automatic: it equals the number of ItemGrid lines below x 9 (max 6 lines / 54 slots).
     ItemGrid:
       '1':
         - "i,x,x,x,s,x,o,o,x"
@@ -100,8 +100,8 @@ Menus:
         - "i,x,x,x,c,x,o,o,x"
         - "i,x,x,x,x,x,o,o,x"
   GrowingMachine:
-    Title: "<gold>Growing Machine"
-    Size: '36'
+    Title: "<gold>Growing Machine <dark_gray>— T<tier>"
+    # Menu size is automatic: it equals the number of ItemGrid lines below x 9 (max 6 lines / 54 slots).
     ItemGrid:
       '1':
         - "x,x,x,x,x,x,s,x,x"
@@ -119,8 +119,8 @@ Menus:
         - "x,x,p,p,p,p,p,o,o"
         - "c,x,x,x,x,x,x,o,o"
   CraftingMachine:
-    Title: "<gold>Crafting Machine"
-    Size: '45'
+    Title: "<gold>Crafting Machine <dark_gray>— T<tier>"
+    # Menu size is automatic: it equals the number of ItemGrid lines below x 9 (max 6 lines / 54 slots).
     # Layout is identical across tiers — tier only affects crafting speed (1.2x per tier).
     # 5 rows × 9 cols = 45 slots. Tester-specified slot positions (0-indexed):
     #   recipes 0–3, 9–12, 18–21, 27–30 (top-left 4×4)

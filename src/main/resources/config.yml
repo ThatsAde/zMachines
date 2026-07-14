@@ -1,29 +1,22 @@
 # Allow hoppers placed above a machine (facing down) to insert fuel/inputs, and hoppers
 # placed below a machine to extract its output. Toggled live by /zmachines reload.
 Hoppers: true
-# Per-tier and per-facing block materials. Both vanilla materials and Nexo IDs (nexo:<id>) are supported.
-# Lookup chain: TierN.Facing → TierN.Material → flat Material (any missing level falls back).
-# Nexo furniture with directional textures: use TierN.North/South/East/West for each facing variant.
-# Give command: /zmachines give <player> <type> <tier> [amount] [North|South|East|West]
-#   Omitting facing gives the TierN.Material (north / default) variant.
-# Example (per-tier per-facing Nexo furniture):
+# Machine block — set ONE block per tier (Tier1/Tier2/Tier3). Each value is either a vanilla
+# material (e.g. FURNACE) or a Nexo block ID (nexo:<id>). Any placed block whose value matches
+# here becomes a machine — this also works for blocks placed by WorldEdit (e.g. a prebuilt
+# starter base): right-click it once to activate the machine.
+#
+# There is NO fallback: every tier you want usable must name a block, and the Nexo id must match
+# exactly. An unconfigured or misspelled tier simply won't become a machine (it stays a plain
+# block, and /zmachines give reports an error) instead of silently turning into a default block.
+#
+# Give command: /zmachines give <player> <type> <tier> [amount]
+# Example (per-tier Nexo blocks):
 #   GrowingMachine:
 #     ItemStack:
-#       Tier1:
-#         Material: "nexo:growing_machine_t1_north"   # default / North
-#         South: "nexo:growing_machine_t1_south"
-#         East:  "nexo:growing_machine_t1_east"
-#         West:  "nexo:growing_machine_t1_west"
-#       Tier2:
-#         Material: "nexo:growing_machine_t2_north"
-#         South: "nexo:growing_machine_t2_south"
-#         East:  "nexo:growing_machine_t2_east"
-#         West:  "nexo:growing_machine_t2_west"
-#       Tier3:
-#         Material: "nexo:growing_machine_t3_north"
-#         South: "nexo:growing_machine_t3_south"
-#         East:  "nexo:growing_machine_t3_east"
-#         West:  "nexo:growing_machine_t3_west"
+#       Tier1: "nexo:growing_machine_1"
+#       Tier2: "nexo:growing_machine_2"
+#       Tier3: "nexo:growing_machine_3"
 RubbleProcessor:
   Name: "<gold>Rubble Processor"
   ItemStack:
@@ -35,7 +28,9 @@ RubbleProcessor:
     - "<gray>into <yellow>different</yellow> ones"
     - ""
     - "<red>Uses fuel"
-    Material: "FURNACE"
+    Tier1: "FURNACE"
+    Tier2: "FURNACE"
+    Tier3: "FURNACE"
 GrowingMachine:
   Name: "<gold>Growing Machine"
   ItemStack:
@@ -47,7 +42,9 @@ GrowingMachine:
     - "<gray>into their <yellow>harvestable</yellow> state"
     - ""
     - "<red>Uses fuel"
-    Material: "COMPOSTER"
+    Tier1: "COMPOSTER"
+    Tier2: "COMPOSTER"
+    Tier3: "COMPOSTER"
 CraftingMachine:
   Name: "<gold>Crafting Machine"
   ItemStack:
@@ -59,7 +56,9 @@ CraftingMachine:
     - "<gray>of configured recipes"
     - ""
     - "<red>Uses fuel"
-    Material: "MAGENTA_CONCRETE"
+    Tier1: "MAGENTA_CONCRETE"
+    Tier2: "MAGENTA_CONCRETE"
+    Tier3: "MAGENTA_CONCRETE"
 Recipes:
   RubbleProcessor:
     # Accepts any block tagged BASE_STONE_OVERWORLD in all 4 input slots.

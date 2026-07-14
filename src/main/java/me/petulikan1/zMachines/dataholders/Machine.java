@@ -337,13 +337,15 @@ public abstract class Machine extends InventoryUtils {
         ItemStack item = progressItemCache.computeIfAbsent(progressLevel, x -> itemGrid.getProgressItems().get(progressLevel).build(null,getNameTagResolver())).clone();
         if(item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             ItemMeta meta = item.getItemMeta();
-            meta.displayName(item.displayName()
+            // Use the raw configured name from the meta — NOT ItemStack#displayName(), which returns the
+            // chat representation wrapped in square brackets ([Progress: 50%]) and was baking those
+            // brackets into the wool's name.
+            meta.displayName(meta.displayName()
                     .replaceText(x ->
                             x.matchLiteral("%progress%")
                                     .replacement(String.valueOf(progress))));
             item.setItemMeta(meta);
         }
-        item.getItemMeta().displayName(item.displayName().replaceText(x -> x.matchLiteral("%progress%").replacement(String.valueOf(progress))));
         gui.setItem(slot, itemGUI.setItem(item));
     }
 
@@ -413,22 +415,28 @@ public abstract class Machine extends InventoryUtils {
             String mat = API.getMaterialRaw(identifier, this.tier);
             boolean isNexoItem = mat.toLowerCase().startsWith("nexo:");
             Material m = Material.getMaterial(mat.toUpperCase());
+            if (m == null && isNexoItem && Loader.isNexoSupport) {
+                String ID = mat.substring(5);
+                this.nexoItemID = ID;
+                ItemStack item = Nexo.getNexoItem(ID);
+                ItemMeta meta = item.getItemMeta();
+                PDC pdc = new PDC(meta);
+                pdc.setBoolean("machine_block", true);
+                pdc.setDouble("item_version", basicItem.getItemVersion());
+                pdc.setString("machine_id", machineType.name());
+                pdc.setString("nexoid", ID);
+                pdc.setInt("machine_tier", this.tier);
+                item.setItemMeta(meta);
+                return machineItem = item;
+            }
             if (m == null) {
-                m = machineType.getDefaultMaterial();
-                if (isNexoItem && Loader.isNexoSupport) {
-                    String ID = mat.substring(5);
-                    this.nexoItemID = ID;
-                    ItemStack item = Nexo.getNexoItem(ID);
-                    ItemMeta meta = item.getItemMeta();
-                    PDC pdc = new PDC(meta);
-                    pdc.setBoolean("machine_block", true);
-                    pdc.setDouble("item_version", basicItem.getItemVersion());
-                    pdc.setString("machine_id", machineType.name());
-                    pdc.setString("nexoid", ID);
-                    pdc.setInt("machine_tier", this.tier);
-                    item.setItemMeta(meta);
-                    return machineItem = item;
-                }
+                // No vanilla fallback by design — the configured block for this tier didn't resolve
+                // (Nexo support off, or the id/material was changed after this machine was created).
+                // Use BEDROCK as a visible sentinel (same as Nexo.getNexoItem's invalid-id marker) so
+                // the break drop isn't lost and the misconfig is obvious, rather than NPEing on build.
+                Loader.main.error("Could not resolve block material '" + mat + "' for " + identifier
+                        + " tier " + this.tier + " — check the Nexo id / material in config.");
+                m = Material.BEDROCK;
             }
             machineItem = basicItem.build(m, getNameTagResolver());
         }
