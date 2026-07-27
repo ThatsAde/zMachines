@@ -22,6 +22,20 @@ generated in `plugins/zMachines/` on first start:
 
 After editing any of these, run `/zmachines reload` — no restart needed.
 
+### Custom menu icons (resource pack)
+
+Any menu item (in `menus.yml` and `display.yml`) accepts an optional `ItemModel` key to render a
+custom icon from a resource pack, using the `minecraft:item_model` component (Paper 1.21.4+):
+
+```yaml
+Settings:
+  Material: "GRAY_STAINED_GLASS_PANE"   # base item (kept)
+  ItemModel: "mypack:menu/coal_icon"    # custom model from your pack
+```
+
+`Material` stays the base item; `ItemModel` just swaps the rendered model. Format is
+`namespace:path`. Omit it for a plain vanilla icon. (The older numeric `ModelData` still works too.)
+
 ---
 
 ## How machines work (read this first)

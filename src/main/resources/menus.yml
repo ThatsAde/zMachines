@@ -1,9 +1,15 @@
+# Each item's Settings support an optional ItemModel key to use a custom icon from a resource
+# pack (the minecraft:item_model component — Paper 1.21.4+). Format: "namespace:path", e.g.
+#   ItemModel: "mypack:menu/coal_icon"
+# Material still sets the base item; ItemModel just swaps the rendered model. Omit it for a
+# plain vanilla icon. (ModelData is the older numeric alternative and still works.)
 Items:
   x:
     MenuAction: "NONE"
     Settings:
       Material: "GRAY_STAINED_GLASS_PANE"
       Display: "<gray>"
+      # ItemModel: "mypack:menu/filler"   # optional resource-pack icon
   c:
     MenuAction: "NONE"
     Settings:

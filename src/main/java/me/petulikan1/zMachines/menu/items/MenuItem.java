@@ -17,6 +17,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -38,6 +39,9 @@ public class MenuItem {
     private final Config config;
     private final Material material;
     private final int modelData;
+    // Optional resource-pack model (minecraft:item_model component). Points a base item at a
+    // named pack model, e.g. "mypack:menu/coal_icon". Null = not configured. Paper 1.21.4+.
+    private final NamespacedKey itemModel;
     private final boolean hideTooltip;
     private final int amount;
     private final List<ItemFlag> itemFlags;
@@ -64,6 +68,7 @@ public class MenuItem {
             m = Material.BEDROCK;
         this.material = m;
         modelData = config.getInt(key + ".ModelData");
+        itemModel = parseItemModel(config.getString(key + ".ItemModel", ""));
         hideTooltip = config.getBoolean(key + ".HideTooltip");
         int a = config.getInt(key + ".Amount");
         amount = a == 0 ? 1 : a;
@@ -110,6 +115,18 @@ public class MenuItem {
         }
         itemFlags = retrieveItemFlags();
         this.action = action;
+    }
+
+    /**
+     * Parses an optional resource-pack model key ("namespace:path", or bare "path" → minecraft:path).
+     * Returns null for a blank value (feature unused) or an invalid key (warns once).
+     */
+    private static NamespacedKey parseItemModel(String value) {
+        if (value == null || value.isBlank()) return null;
+        NamespacedKey key = NamespacedKey.fromString(value.trim());
+        if (key == null)
+            Loader.main.warn("Invalid ItemModel '" + value + "' — expected format 'namespace:path'. Ignoring.");
+        return key;
     }
 
     private ItemFlag getFlag(String value) {
@@ -178,6 +195,12 @@ public class MenuItem {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setCustomModelData(modelData);
+            if (itemModel != null) {
+                // Resource-pack custom icon (minecraft:item_model). Guarded so a pre-1.21.4 server
+                // just ignores it instead of crashing on the missing method.
+                try { meta.setItemModel(itemModel); }
+                catch (NoSuchMethodError ignored) {}
+            }
             meta.displayName(displayName(resolvers));
             meta.lore(getLore(resolvers));
             meta.setHideTooltip(hideTooltip);
