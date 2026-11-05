@@ -115,6 +115,11 @@ the required items across slots in any order. Outputs support both vanilla and N
 
 All recipes live under the top-level `Recipes:` section, grouped by machine.
 
+> **Item format** — every `Input`/`Inputs`/`Output` value is `MATERIAL:amount` for a vanilla item
+> or `nexo:<id>:amount` for a Nexo item (the `:amount` is optional and defaults to 1). Nexo items
+> work as both **inputs and outputs**. The only exception is the Rubble Processor's *input*, which
+> always accepts any `BASE_STONE_OVERWORLD` block (its `Output` can still be a Nexo item).
+
 ### Rubble Processor — one global recipe
 ```yaml
 Recipes:
@@ -131,10 +136,10 @@ Recipes:
       BaseRate: 30.0
       Input:  "PUMPKIN_SEEDS"
       Output: "PUMPKIN:1"
-    melon:
+    magic_crop:                  # Nexo input + Nexo output both work
       BaseRate: 35.0
-      Input:  "MELON_SEEDS"
-      Output: "MELON:1"
+      Input:  "nexo:magic_seed"
+      Output: "nexo:magic_crop:2"
 ```
 
 ### Crafting Machine — ordered recipe list

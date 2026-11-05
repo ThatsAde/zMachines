@@ -60,6 +60,10 @@ CraftingMachine:
     Tier2: "MAGENTA_CONCRETE"
     Tier3: "MAGENTA_CONCRETE"
 Recipes:
+  # Item format for every Input/Output below is "MATERIAL:amount" for vanilla, or
+  # "nexo:<id>:amount" for a Nexo item (amount optional, defaults to 1). Nexo items work as both
+  # inputs and outputs. The Rubble Processor input is the exception — it always accepts any block
+  # tagged BASE_STONE_OVERWORLD (its Output may still be a Nexo item).
   RubbleProcessor:
     # Accepts any block tagged BASE_STONE_OVERWORLD in all 4 input slots.
     # Consumes 1 from each slot per cycle and produces 1 Output.
@@ -68,6 +72,7 @@ Recipes:
     Output: "DIRT:1"
   GrowingMachine:
     # Named recipes — one per seed type. Seeds are NOT consumed (matches vanilla farming).
+    # Input may be a vanilla seed or a Nexo item, e.g. Input: "nexo:magic_seed".
     pumpkin:
       BaseRate: 30.0
       Input: "PUMPKIN_SEEDS"

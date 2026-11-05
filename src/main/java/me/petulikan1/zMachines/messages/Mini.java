@@ -1,12 +1,12 @@
 package me.petulikan1.zMachines.messages;
 
 import me.petulikan1.zMachines.Loader;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public interface Mini extends TextComponent {
+public interface Mini extends ComponentLike {
 
     static Mini mm(@NonNull String text, TagResolver... tagResolvers) {
         return new MiniImpl(Loader.getTranslations(), "Translations", text, tagResolvers);

@@ -167,9 +167,9 @@ public class Nexo implements Listener {
             String nexoId = e.getMechanic().getItemID();
             Pair<MachineType, Integer> entry = API.nexoMachineById.get(nexoId);
             if (entry == null) return;
-            e.setCancelled(true);
             final Player player = e.getPlayer();
             if (!player.isConnected() || player.isSneaking()) return;
+            e.setCancelled(true);
             API.runTaskAsync(() -> {
                 try {
                     Machine created = API.createMachine(new Pair<>(entry.getKey(), nexoId), player, loc, entry.getValue());
@@ -185,9 +185,9 @@ public class Nexo implements Listener {
             return;
         }
         // Machine already registered — suppress furniture behaviour and open GUI.
-        e.setCancelled(true);
         final Player player = e.getPlayer();
         if (!player.isConnected() || player.isSneaking()) return;
+        e.setCancelled(true);
         // Guard against double-open if the GUI is already showing for this player.
         if (machine.getGui() != null && machine.getGui().getInventory().getViewers().contains(player)) return;
         machine.openGUI(player);
@@ -274,9 +274,9 @@ public class Nexo implements Listener {
             String nexoId = e.getMechanic().getItemID();
             Pair<MachineType, Integer> entry = API.nexoMachineById.get(nexoId);
             if (entry == null) return;
-            e.setCancelled(true);
             final Player player = e.getPlayer();
             if (!player.isConnected() || player.isSneaking()) return;
+            e.setCancelled(true);
             API.runTaskAsync(() -> {
                 try {
                     Machine created = API.createMachine(new Pair<>(entry.getKey(), nexoId), player, loc, entry.getValue());
@@ -293,15 +293,18 @@ public class Nexo implements Listener {
         }
         // Registered machine: cancel the Nexo event to suppress default custom-block behaviour
         // (note sounds, etc.) on any interaction.
-        e.setCancelled(true);
         // Open the GUI directly here: Nexo may set useInteractedBlock=DENY on the underlying
         // PlayerInteractEvent, which would cause MachineListener.onInteract to exit early.
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             final Player player = e.getPlayer();
-            if (player.isConnected() && !player.isSneaking()) {
-                machine.openGUI(player);
-            }
+            // Keep sneak-right-click uncancelled so blocks such as hoppers can be placed against
+            // the machine, matching MachineListener's behaviour for non-Nexo machines.
+            if (!player.isConnected() || player.isSneaking()) return;
+            e.setCancelled(true);
+            machine.openGUI(player);
+            return;
         }
+        e.setCancelled(true);
     }
 
 

@@ -203,7 +203,7 @@ public class API {
 
     private static void loadRubbleRecipe() {
         List<RecipeItem> list = new ArrayList<>();
-        HashMap<Material, RecipeItem> index = new HashMap<>();
+        HashMap<String, RecipeItem> index = new HashMap<>();
         String path = "Recipes.RubbleProcessor";
         if (Loader.cfg.existsKey(path + ".BaseRate") && Loader.cfg.existsKey(path + ".Output")) {
             double baseRate = Loader.cfg.getDouble(path + ".BaseRate", 4.0);
@@ -278,7 +278,7 @@ public class API {
 
     private static void loadGrowingRecipes() {
         List<RecipeItem> list = new ArrayList<>();
-        HashMap<Material, RecipeItem> index = new HashMap<>();
+        HashMap<String, RecipeItem> index = new HashMap<>();
         String basePath = "Recipes.GrowingMachine";
         for (String key : Loader.cfg.getKeys(basePath)) {
             String path = basePath + "." + key;
@@ -306,7 +306,7 @@ public class API {
             inputs.add(input);
             RecipeItem recipe = new RecipeItem(inputs, output, baseRate);
             list.add(recipe);
-            index.put(input.getMaterial(), recipe);
+            index.put(RecipeItem.keyFor(input), recipe);
         }
         Loader.recipeItems.put(MachineType.GROWING_MACHINE, list);
         Loader.recipeIndex.put(MachineType.GROWING_MACHINE, index);

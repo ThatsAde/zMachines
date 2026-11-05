@@ -2,6 +2,7 @@ package me.petulikan1.zMachines.items;
 
 import com.nexomc.nexo.api.NexoItems;
 import lombok.Getter;
+import me.petulikan1.zMachines.Loader;
 import me.petulikan1.zMachines.dataholders.Tier;
 import org.bukkit.inventory.ItemStack;
 
@@ -59,13 +60,21 @@ public class RecipeItem {
         return true;
     }
 
-    private static String keyFor(ItemStack stack) {
-        String nexoId = NexoItems.idFromItem(stack);
-        if (nexoId != null) return "nexo:" + nexoId;
+    /**
+     * Canonical lookup key for a live stack: its Nexo ID when it's a Nexo item, otherwise the vanilla
+     * material. Guarded so servers without Nexo never touch the Nexo API. Shared by the recipe indexes
+     * so Nexo items work as recipe inputs, not just vanilla materials.
+     */
+    public static String keyFor(ItemStack stack) {
+        if (Loader.isNexoSupport) {
+            String nexoId = NexoItems.idFromItem(stack);
+            if (nexoId != null) return "nexo:" + nexoId;
+        }
         return "vanilla:" + stack.getType().name();
     }
 
-    private static String keyFor(SimpleItem item) {
+    /** Canonical lookup key for a configured ingredient/output — must mirror {@link #keyFor(ItemStack)}. */
+    public static String keyFor(SimpleItem item) {
         if (item.getNexoId() != null) return "nexo:" + item.getNexoId();
         return "vanilla:" + item.getMaterial().name();
     }

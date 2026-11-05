@@ -2,6 +2,6 @@ name: zMachines
 main: me.petulikan1.zMachines.Loader
 authors: [petulikan1, ItsmeFawaz]
 version: 1.0
-api-version: 1.13
+api-version: '26.2'
 softdepend:
   - "Nexo"

@@ -39,7 +39,7 @@ public class MenuConfig {
     }
 
     public Component getTitle(TagResolver... resolvers) {
-        return new MiniImpl(Loader.menuCfg, getMenuPath(), "Title", resolvers);
+        return new MiniImpl(Loader.menuCfg, getMenuPath(), "Title", resolvers).asComponent();
     }
 
     private InventoryType type;

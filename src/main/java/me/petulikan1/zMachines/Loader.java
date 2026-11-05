@@ -41,7 +41,9 @@ public class Loader extends JavaPlugin {
 
     public static List<FuelItem> fuelItems = new ArrayList<>();
     public static HashMap<MachineType, List<RecipeItem>> recipeItems = new HashMap<>();
-    public static HashMap<MachineType, HashMap<Material, RecipeItem>> recipeIndex = new HashMap<>();
+    // Keyed by RecipeItem.keyFor(...) — a canonical string (Nexo id or vanilla material) so Nexo items
+    // can be used as recipe inputs (e.g. the Growing Machine), not just vanilla materials.
+    public static HashMap<MachineType, HashMap<String, RecipeItem>> recipeIndex = new HashMap<>();
     // String-keyed recipe lookup. Used by the Crafting Machine where recipes are identified by config key
     // rather than by input material.
     public static HashMap<MachineType, HashMap<String, RecipeItem>> recipeByIdIndex = new HashMap<>();
@@ -69,9 +71,9 @@ public class Loader extends JavaPlugin {
     }
 
     public static RecipeItem getRecipeItem(ItemStack item, Machine machine) {
-        HashMap<Material, RecipeItem> index = recipeIndex.get(machine.getMachineType());
+        HashMap<String, RecipeItem> index = recipeIndex.get(machine.getMachineType());
         if (index == null) return null;
-        return index.get(item.getType());
+        return index.get(RecipeItem.keyFor(item));
     }
 
 

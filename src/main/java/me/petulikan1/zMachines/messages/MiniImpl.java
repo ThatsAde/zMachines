@@ -7,17 +7,14 @@ import me.petulikan1.zMachines.config.Config;
 import me.petulikan1.zMachines.utils.StringUtils;
 import me.petulikan1.zMachines.utils.Validator;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +24,11 @@ public class MiniImpl implements Mini {
 
     private final TextComponent tc;
 
+    @Override
+    public @NotNull Component asComponent() {
+        return tc;
+    }
+
     public MiniImpl(@NonNull Config config, @NonNull String rootPath, @NonNull String path) {
         tc = config.get(rootPath + "." + path) instanceof List<?> ? (TextComponent) getTrLC(config, rootPath, path) : (TextComponent) getTrC(config, rootPath, path);
     }
@@ -35,41 +37,6 @@ public class MiniImpl implements Mini {
         tc = config.get(rootPath + "." + path) instanceof List<?> ? (TextComponent) getTrLC(config, rootPath, path, tagResolvers) : (TextComponent) getTrC(config, rootPath, path, tagResolvers);
     }
 
-
-    @Override
-    public @NotNull String content() {
-        return tc.content();
-    }
-
-    @Override
-    public @NotNull TextComponent content(@NotNull String content) {
-        return tc.content(content);
-    }
-
-    @Override
-    public @NotNull Builder toBuilder() {
-        return tc.toBuilder();
-    }
-
-    @Override
-    public @Unmodifiable @NotNull List<Component> children() {
-        return tc.children();
-    }
-
-    @Override
-    public @NotNull TextComponent children(@NotNull List<? extends ComponentLike> children) {
-        return tc.children(children);
-    }
-
-    @Override
-    public @NotNull Style style() {
-        return tc.style();
-    }
-
-    @Override
-    public @NotNull TextComponent style(@NotNull Style style) {
-        return tc.style(style);
-    }
 
     @Getter
     private final static MiniMessage mm = MiniMessage.miniMessage();
