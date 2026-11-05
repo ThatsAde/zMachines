@@ -1,4 +1,4 @@
-# zMachines — Development Recap
+# zMachines: development recap
 
 ## Overview
 
@@ -16,7 +16,7 @@ Full implementation of the two machine types (Rubble Processor and Growing Machi
 
 ## 2. Growing Machine
 
-**Per-slot progress:** Each seed slot now tracks its own independent grow cycle. The wool indicator directly below a seed slot reflects only that slot's progress — gray when empty, cycling red → orange → yellow → lime while growing, and resetting to red after each harvest. Slots left empty stay gray.
+**Per-slot progress:** Each seed slot now tracks its own independent grow cycle. The wool indicator directly below a seed slot reflects only that slot's progress: gray when empty, cycling red → orange → yellow → lime while growing, and resetting to red after each harvest. Slots left empty stay gray.
 
 **Tier-scaled slot count:** The number of seed (and matching wool) slots scales with tier:
 - Tier 1 → 3 slots
@@ -40,7 +40,7 @@ Tiers are now numbered **1, 2, 3** (previously 0, 1, 2). Speed scales automatica
 No more hardcoded per-tier rate tables. Each recipe only defines one `BaseRate`; tier 2 and 3 timings are derived automatically.
 
 **Backward compatibility:**
-- Existing machines stored in the database (old tier 0/1/2) are automatically migrated to 1/2/3 on first plugin startup — no manual action needed.
+- Existing machines stored in the database (old tier 0/1/2) are automatically migrated to 1/2/3 on first plugin startup, with no manual action needed.
 - Machine items in player inventories from versions before 2.0 are detected via an `item_version` NBT tag and their tier is adjusted on placement.
 
 ---
@@ -50,8 +50,8 @@ No more hardcoded per-tier rate tables. Each recipe only defines one `BaseRate`;
 ### Unified tick logic
 `Machine` and `GrowingMachine` previously had ~70% duplicated tick logic with the only real differences being whether to consume inputs and whether to update progress wool. This was consolidated into a template method pattern:
 
-- `consumesInputs()` — returns `true` by default; `GrowingMachine` overrides to `false`
-- `onRecipeProgress(...)` — no-op by default; `GrowingMachine` overrides to update its wool slots
+- `consumesInputs()` returns `true` by default; `GrowingMachine` overrides to `false`
+- `onRecipeProgress(...)` is a no-op by default; `GrowingMachine` overrides to update its wool slots
 
 `GrowingMachine.onTick` and `GrowingMachine.update` (~130 lines of duplicated code) were deleted entirely.
 
@@ -62,7 +62,7 @@ No more hardcoded per-tier rate tables. Each recipe only defines one `BaseRate`;
 `Loader.getRecipeItem()` previously iterated all recipes linearly on every tick (called every 50 ms per slot). A `HashMap<Material, RecipeItem>` index is now populated at config load time, making the lookup O(1).
 
 ### Removed dead code
-- `EmptyItemGUI.java` — class never instantiated
+- `EmptyItemGUI.java`, a class that was never instantiated
 - Dead `public static GUI gui` fields in `RubbleProcessor` and `GrowingMachine`
 - Leftover commented-out blocks in `InventoryUtils`
 
@@ -80,7 +80,7 @@ The single `config.yml` was split into three focused files:
 
 | File | Contents |
 |---|---|
-| `config.yml` | Machine block materials, recipes, fuel — the settings you change for gameplay |
+| `config.yml` | Machine block materials, recipes, fuel: the settings you change for gameplay |
 | `menus.yml` | GUI item definitions (`Items`) and inventory layouts per tier (`Menus`) |
 | `display.yml` | Status indicator items (`Status`) and progress wool items (`Progress`) |
 
@@ -104,4 +104,4 @@ Any fuel item listed here works in every machine. The per-machine fuel sections 
 
 ## 7. Documentation
 
-- **`GUIDE.md`** — configuration reference and step-by-step testing checklist covering both machine types, all three tiers, break/drop behavior, and server-restart persistence.
+- **`GUIDE.md`**: configuration reference and step-by-step testing checklist covering both machine types, all three tiers, break/drop behavior, and server-restart persistence.

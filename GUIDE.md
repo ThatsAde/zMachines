@@ -1,13 +1,13 @@
-# zMachines — Setup & Configuration Guide
+# zMachines: setup and configuration guide
 
 A guide to installing and configuring zMachines. If you only read one section, read
-**[How machines work](#how-machines-work-read-this-first)** — it explains the part that trips people up.
+**[How machines work](#how-machines-work-read-this-first)**: it explains the part that trips people up.
 
 ---
 
 ## Requirements & install
 
-- **Paper** 1.21.x
+- **Paper** 26.2 or newer, on Java 25
 - **Nexo** 1.24+ (optional, but required if you want Nexo custom blocks as machines)
 
 Drop `zMachines-1.0.0-dev.jar` into your server's `plugins/` folder and restart. The config files are
@@ -20,7 +20,7 @@ generated in `plugins/zMachines/` on first start:
 | `display.yml` | Display/formatting strings |
 | `translations.yml` | Player-facing messages |
 
-After editing any of these, run `/zmachines reload` — no restart needed.
+After editing any of these, run `/zmachines reload`. No restart needed.
 
 ### Custom menu icons (resource pack)
 
@@ -51,7 +51,7 @@ machine in `config.yml`. From then on:
 ### The important part: WorldEdit / prebuilt bases
 
 When WorldEdit pastes a schematic (e.g. a prebuilt starter base with a machine block already inside), it
-sets the blocks directly — **no place event fires**, so the plugin doesn't know a machine was created yet.
+sets the blocks directly, so **no place event fires**, so the plugin doesn't know a machine was created yet.
 
 That's fine. The machine **activates automatically the first time a player right-clicks it.** From that
 click on, it's a normal machine. You don't need to run any command or place anything by hand.
@@ -79,7 +79,7 @@ Each tier is one block. If you want the same block for every tier, just put the 
 
 > ⚠️ **There is no fallback.** Every tier you want usable must name a block, and the Nexo ID must match
 > the **exact** ID from your Nexo config (the part after `nexo:`). If a tier is left blank or the ID is
-> misspelled, that block simply **won't become a machine** — it stays a plain block, and `/zmachines give`
+> misspelled, that block simply **won't become a machine**: it stays a plain block, and `/zmachines give`
 > reports an error rather than handing out a default block. After changing IDs, run `/zmachines reload`.
 
 The three machine types and the vanilla blocks they ship with by default (all three tiers):
@@ -103,7 +103,7 @@ from each filled input slot per cycle.
 
 ### Growing Machine
 "Grows" seeds into their harvest. One named recipe per seed type. **Seeds are never consumed** (like
-vanilla farming) — the machine keeps producing as long as it has fuel.
+vanilla farming); the machine keeps producing as long as it has fuel.
 
 ### Crafting Machine
 Crafts custom items from a list of recipes. Inputs are summed across the input slots, so players can split
@@ -115,12 +115,12 @@ the required items across slots in any order. Outputs support both vanilla and N
 
 All recipes live under the top-level `Recipes:` section, grouped by machine.
 
-> **Item format** — every `Input`/`Inputs`/`Output` value is `MATERIAL:amount` for a vanilla item
+> **Item format:** every `Input`/`Inputs`/`Output` value is `MATERIAL:amount` for a vanilla item
 > or `nexo:<id>:amount` for a Nexo item (the `:amount` is optional and defaults to 1). Nexo items
 > work as both **inputs and outputs**. The only exception is the Rubble Processor's *input*, which
 > always accepts any `BASE_STONE_OVERWORLD` block (its `Output` can still be a Nexo item).
 
-### Rubble Processor — one global recipe
+### Rubble Processor: one global recipe
 ```yaml
 Recipes:
   RubbleProcessor:
@@ -128,7 +128,7 @@ Recipes:
     Output: "DIRT:1"   # MATERIAL:amount
 ```
 
-### Growing Machine — one entry per seed
+### Growing Machine: one entry per seed
 ```yaml
 Recipes:
   GrowingMachine:
@@ -142,7 +142,7 @@ Recipes:
       Output: "nexo:magic_crop:2"
 ```
 
-### Crafting Machine — ordered recipe list
+### Crafting Machine: ordered recipe list
 ```yaml
 Recipes:
   CraftingMachine:
@@ -205,7 +205,7 @@ Permission: `zMachines.admin`.
 | `/zmachines give <player> <type> <tier> [amount]` | Gives a machine block item. `<type>` = `RUBBLE_PROCESSOR`, `GROWING_MACHINE`, `CRAFTING_MACHINE` (or the config name). `<tier>` = 1–3. |
 | `/zmachines reload` | Reloads all config files and re-reads machine block IDs. |
 
-The give command is just a convenience for handing out machines manually — it is **not** required for the
+The give command is just a convenience for handing out machines manually. It is **not** required for the
 WorldEdit/starter-base flow, which works purely from the block being placed and clicked.
 
 ---
@@ -220,7 +220,7 @@ WorldEdit/starter-base flow, which works purely from the block being placed and 
    to activate → the GUI opens and the machine is now live.
 5. Breaking the block removes the machine and returns the item.
 
-No command, no special tagged item — just the configured Nexo block in the right spot.
+No command, no special tagged item, just the configured Nexo block in the right spot.
 
 ---
 
@@ -229,13 +229,13 @@ No command, no special tagged item — just the configured Nexo block in the rig
 **Right-clicking the block does nothing / no GUI opens**
 - The Nexo ID in `config.yml` doesn't match the actual Nexo block ID. Check spelling (the part after
   `nexo:`), then `/zmachines reload`. There's no fallback, so a mismatched ID means the block is just a
-  plain block — exactly this symptom.
+  plain block, which is exactly this symptom.
 - Nexo isn't loaded. Confirm Nexo is installed and enabled; check the console at startup for a zMachines
   error about Nexo support being disabled.
 
 **`/zmachines give` says "No block configured for … tier N"**
 - That tier has no block set (or the value is empty/misspelled). Set `TierN` for that machine to a vanilla
-  material or `nexo:<id>` in `config.yml`, then `/zmachines reload`. This is by design — there is no
+  material or `nexo:<id>` in `config.yml`, then `/zmachines reload`. This is by design: there is no
   default-block fallback.
 
 **`/zmachines` command not found**
@@ -243,7 +243,7 @@ No command, no special tagged item — just the configured Nexo block in the rig
 
 **Machine block doesn't drop the right item when broken**
 - Make sure you're breaking the actual machine block. A block that was never activated (never clicked)
-  drops the plain Nexo item, which is expected — re-place and click it to re-activate.
+  drops the plain Nexo item, which is expected. Re-place and click it to re-activate.
 
 **Changed the config but nothing changed in-game**
 - Run `/zmachines reload`. If you changed a block ID, existing already-placed machines keep their old block;
